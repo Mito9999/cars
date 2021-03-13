@@ -3,14 +3,17 @@ import express from "express";
 
 const app = express();
 
+let allPosts = [];
+
 app.get("/:location", async (req, res) => {
   const browser = await puppeteer.launch();
   try {
     const { location } = req.params || { location: "sfbay" };
+    const pagination = req.query.pagination || 0;
     const page = await browser.newPage();
 
     await page.goto(
-      `https://${location}.craigslist.org/d/cars-trucks-by-owner/search/cto`
+      `https://${location}.craigslist.org/d/cars-trucks-by-owner/search/cto?s=${pagination}`
     );
 
     try {
@@ -24,20 +27,23 @@ app.get("/:location", async (req, res) => {
           price: post.children[1].children[3].children[0].innerText,
         }));
       });
+
+      allPosts = [...allPosts, ...posts];
+
       res.json({
         message: "Successfully retrieved posts",
-        posts,
+        posts: allPosts,
       });
     } catch {
       res.status(404).json({
         message: "Failed to evaluate posts",
-        posts: [],
+        posts: allPosts,
       });
     }
   } catch {
     res.status(500).json({
       message: "An unknown server error occured",
-      posts: [],
+      posts: allPosts,
     });
   }
 
