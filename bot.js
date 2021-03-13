@@ -20,13 +20,21 @@ client.on("message", async (msg) => {
     // const res = await fetch("http://localhost:2000/sfbay");
     // const data = await res.json();
 
+    const channel = client.channels.cache.get("820419455405260830");
+
     // not using .forEach index parameter due to conditional timeouts
     data.posts.forEach((post) => {
       if (!postsShown.includes(post)) {
+        // `${post.price} - ${post.title} - ${post.date} - ${post.url}`
         const timeoutID = setTimeout(() => {
-          msg.reply(
-            `${post.price} - ${post.title} - ${post.date} - ${post.url}`
-          );
+          const exampleEmbed = new Discord.MessageEmbed()
+            .setColor("#0099ff")
+            .setTitle(post.title)
+            .setURL(post.url)
+            .addFields({ name: "Price", value: post.price })
+            .setTimestamp(new Date(post.date));
+
+          channel.send(exampleEmbed);
           postsShown.push(post);
         }, 3000 * i);
         i++;
