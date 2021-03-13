@@ -3,27 +3,10 @@ import express from "express";
 
 const app = express();
 
-const formatDate = (dateString) => {
-  try {
-    const date = new Date(dateString);
-
-    const hours = date.getHours();
-    const minutes = date.getMinutes().toString().padStart(2, "0");
-    const month = date.getMonth();
-    const day = date.getDay();
-    const year = date.getFullYear();
-
-    return `${hours}:${minutes} ${month}/${day}/${year}`;
-  } catch {
-    console.log("Invalid Date passed to formatDate()");
-    return dateString;
-  }
-};
-
 app.get("/:location", async (req, res) => {
   const browser = await puppeteer.launch();
   try {
-    const { location } = req.params || "sfbay";
+    const { location } = req.params || { location: "sfbay" };
     const page = await browser.newPage();
 
     await page.goto(
@@ -33,6 +16,7 @@ app.get("/:location", async (req, res) => {
     try {
       const posts = await page.evaluate(() => {
         let elements = Array.from(document.querySelectorAll(".rows > *"));
+
         return elements.map((post) => ({
           url: post.children[0].href,
           date: post.children[1].children[1].attributes.datetime.value,
