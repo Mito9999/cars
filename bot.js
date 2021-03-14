@@ -10,14 +10,19 @@ const client = new Discord.Client();
 client.on("ready", () => {
   console.log(`Logged in as ${client.user.tag}!`);
 
-  const data = { ...mockPosts };
-  const postsShown = [];
+  let data = { ...mockPosts };
+  const postsShown = [...mockPosts.posts];
   const channel = client.channels.cache.get("820419455405260830");
   let timeoutIDs = [];
 
-  cron.schedule("*/15 * * * *", () => {
+  cron.schedule("*/15 * * * *", async () => {
+    console.log("--- CRON JOB RUNNING ---");
     timeoutIDs.forEach((id) => clearTimeout(id));
     timeoutIDs = [];
+
+    const res = await fetch("http://localhost:2000/sfbay");
+    console.log(res.status);
+    data = await res.json();
 
     let i = 0;
     data.posts.forEach((post) => {

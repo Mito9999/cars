@@ -39,7 +39,13 @@ app.get("/:location", async (req, res) => {
       });
       // image is set oddly due to niche map error
 
-      allPosts = [...allPosts, ...posts];
+      // TODO: FIX REMOVE DUPLICATES FEATURE
+      const combinedPosts = [...allPosts, ...posts];
+      allPosts = combinedPosts.reduce(
+        (prev, cur) => (prev.includes(post) ? prev : [...prev, cur]),
+        []
+      );
+      console.log(allPosts.length);
 
       res.json({
         message: "Successfully retrieved posts",
