@@ -32,6 +32,7 @@ client.on("message", async (msg) => {
             .setTitle(post.title)
             .setURL(post.url)
             .addFields({ name: "Price", value: post.price })
+            .setImage(post.image)
             .setTimestamp(new Date(post.date));
 
           channel.send(exampleEmbed);

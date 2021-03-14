@@ -20,13 +20,24 @@ app.get("/:location", async (req, res) => {
       const posts = await page.evaluate(() => {
         let elements = Array.from(document.querySelectorAll(".rows > *"));
 
-        return elements.map((post) => ({
-          url: post.children[0].href,
-          date: post.children[1].children[1].attributes.datetime.value,
-          title: post.children[1].children[2].children[0].innerText,
-          price: post.children[1].children[3].children[0].innerText,
-        }));
+        return elements.map((post) => {
+          return {
+            url: post.children[0].href,
+            date: post.children[1].children[1].attributes.datetime.value,
+            title: post.children[1].children[2].children[0].innerText,
+            price: post.children[1].children[3].children[0].innerText,
+            image:
+              post.innerHTML.match(
+                /https:\/\/images\.craigslist\.org\/\w+(\.jpg)/
+              ) === null
+                ? ""
+                : post.innerHTML.match(
+                    /https:\/\/images\.craigslist\.org\/\w+(\.jpg)/
+                  )[0],
+          };
+        });
       });
+      // image is set oddly due to niche map error
 
       allPosts = [...allPosts, ...posts];
 
