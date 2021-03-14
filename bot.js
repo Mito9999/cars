@@ -13,11 +13,13 @@ client.on("ready", () => {
   const data = { ...mockPosts };
   const postsShown = [];
   const channel = client.channels.cache.get("820419455405260830");
+  let timeoutIDs = [];
 
-  cron.schedule("1 * * * *", () => {
+  cron.schedule("*/15 * * * *", () => {
+    timeoutIDs.forEach((id) => clearTimeout(id));
+    timeoutIDs = [];
+
     let i = 0;
-    const timeoutIDs = [];
-
     data.posts.forEach((post) => {
       if (!postsShown.includes(post)) {
         const timeoutID = setTimeout(() => {
